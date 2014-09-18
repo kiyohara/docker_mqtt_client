@@ -25,7 +25,7 @@ if __name__ == '__main__':
         #client = etcd.Client(host='172.17.42.1')
         client = etcd.Client(host='10.1.42.1')
         mqtt_server = json.loads(client.read('/services/mqtt-broker').value)
-        mqtt_server_addr = mqtt_server["host"]
+        mqtt_server_addr = mqtt_server["ipaddr"]
     except:
         mqtt_server_addr = os.environ.get('MQTT_SERVER_ADDR') or "127.0.0.1"
 
