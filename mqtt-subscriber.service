@@ -1,0 +1,11 @@
+[Unit]
+Description=MQTT Subscriber
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill mqtt-subscriber
+ExecStartPre=-/usr/bin/docker rm mqtt-subscriber
+ExecStartPre=/usr/bin/docker pull kiyohara/docker-mqtt-client
+ExecStart=/usr/bin/docker run --name mqtt-subscriber --rm kiyohara/docker-mqtt-client

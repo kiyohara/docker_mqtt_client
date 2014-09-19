@@ -1,0 +1,11 @@
+[Unit]
+Description=MQTT Publisher
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill mqtt-publisher
+ExecStartPre=-/usr/bin/docker rm mqtt-publisher
+ExecStartPre=/usr/bin/docker pull kiyohara/docker-mqtt-client
+ExecStart=/usr/bin/docker run --name mqtt-publisher --rm kiyohara/docker-mqtt-client python3 /usr/sbin/pub.py
