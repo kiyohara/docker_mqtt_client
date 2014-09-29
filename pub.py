@@ -1,6 +1,7 @@
 # coding=utf8
 
 import os
+import sys
 from time import sleep
 import paho.mqtt.client as paho
 import etcd
