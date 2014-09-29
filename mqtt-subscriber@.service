@@ -1,19 +1,18 @@
 [Unit]
-Description=MQTT Publisher
+Description=MQTT Subscriber
 After=docker.service
 Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill mqtt-publisher
-ExecStartPre=-/usr/bin/docker rm mqtt-publisher
+ExecStartPre=-/usr/bin/docker kill mqtt-subscriber-%i
+ExecStartPre=-/usr/bin/docker rm mqtt-subscriber-%i
 ExecStartPre=/usr/bin/docker pull kiyohara/docker-mqtt-client
 ExecStart=/bin/sh -c '\
   ETCD_ADDR=$(ip -o address show dev docker0 | head -1 | awk "{print \$4}" | cut -d/ -f1); \
   /usr/bin/docker run \
     -e "ETCD_SERVER_ADDR=$ETCD_ADDR" \
-    --name mqtt-publisher \
+    --name mqtt-subscriber-%i \
     --rm \
     kiyohara/docker-mqtt-client \
-    python3 /usr/sbin/pub.py \
 '
