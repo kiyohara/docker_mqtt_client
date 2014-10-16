@@ -2,17 +2,39 @@
 
 import os
 import sys
+import time
 import paho.mqtt.client as paho
 import etcd
 import json
+
+g_sub_counter = 0
+g_start_time = 0
+g_end_time = 0
 
 def on_connect(client, obj, rc):
     print("connection result: {0}".format(str(rc)))
     sys.stdout.flush()
 
 def on_message(client, obj, mesg):
-    print("mesg: {0} {1} {2}".format(mesg.topic, str(mesg.qos), str(mesg.payload)))
-    sys.stdout.flush()
+    global g_sub_counter
+    global g_start_time
+    global g_end_time
+
+    g_sub_counter  += 1
+
+    if g_sub_counter == 1:
+        g_start_time = int(time.time()*1000)
+        print("start time : {0} ms".format(g_start_time))
+        sys.stdout.flush()
+
+    if g_sub_counter == 100000:
+        g_end_time = int(time.time()*1000)
+        print("  end time : {0} ms".format(g_end_time))
+        print("delta time : {0} ms".format(g_end_time - g_start_time))
+        sys.stdout.flush()
+
+    #print("mesg: {0} {1} {2} {3}".format(mesg.topic, str(mesg.qos), str(mesg.payload), str(g_sub_counter)))
+    #sys.stdout.flush()
 
 def on_publish(client, obj, mid):
     print("Published mid: {0}".format(str(mid)))

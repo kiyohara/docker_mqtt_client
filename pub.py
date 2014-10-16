@@ -2,10 +2,15 @@
 
 import os
 import sys
+import time
 from time import sleep
 import paho.mqtt.client as paho
 import etcd
 import json
+
+g_pub_counter = 0
+g_start_time = 0
+g_end_time = 0
 
 def on_connect(client, obj, rc):
     print("connection result: {0}".format(str(rc)))
@@ -16,8 +21,25 @@ def on_message(client, obj, mesg):
     sys.stdout.flush()
 
 def on_publish(client, obj, mid):
-    print("Published mid: {0}".format(str(mid)))
-    sys.stdout.flush()
+    global g_pub_counter
+    global g_start_time
+    global g_end_time
+
+    g_pub_counter += 1
+
+    if g_pub_counter == 1:
+        g_start_time = int(time.time()*1000)
+        print("start time : {0} ms".format(g_start_time))
+        sys.stdout.flush()
+
+    if g_pub_counter == 100000:
+        g_end_time = int(time.time()*1000)
+        print("  end time : {0} ms".format(g_end_time))
+        print("delta time : {0} ms".format(g_end_time - g_start_time))
+        sys.stdout.flush()
+
+    # print("Published mid: {0}".format(str(mid)))
+    # sys.stdout.flush()
 
 def on_log(client, obj, level, string):
     print(string)
@@ -50,14 +72,14 @@ if __name__ == '__main__':
     try:
         client.connect(mqtt_server_addr, 1883, 60)
 
-        i = 0
+        i = 1
         while client.loop() == 0:
             client.publish("my/topic/string", "hello%d"%i, qos=0)
-            if i == 10000:
+            if i == 100000:
                 break
             else:
                 i+=1
-                sleep(1)
+                #sleep(1)
             pass
     except:
         print("MQTT server: connection refused")
