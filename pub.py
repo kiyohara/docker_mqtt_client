@@ -8,6 +8,8 @@ import paho.mqtt.client as paho
 import etcd
 import json
 
+PUB_PER_SEC = 6100
+
 g_pub_counter = 0
 g_start_time = 0
 g_end_time = 0
@@ -72,14 +74,30 @@ if __name__ == '__main__':
     try:
         client.connect(mqtt_server_addr, 1883, 60)
 
+        pub_interval = 1 / PUB_PER_SEC
+        print("pub interval: {0}".format(pub_interval))
+
         i = 1
+        start_time = time.time()
         while client.loop() == 0:
             client.publish("my/topic/string", "hello%d"%i, qos=0)
+
             if i == 100000:
                 break
             else:
+                next_pub_time = start_time + (i * pub_interval)
+                #print("next pubt : {0}".format(next_pub_time))
+
+                crr_time = time.time()
+                #print("crr time  : {0}".format(crr_time))
+
+                sleep_time = next_pub_time - crr_time
+                #print("sleep time : {0}".format(sleep_time))
+
+                if sleep_time > 0:
+                    sleep(sleep_time)
+
                 i+=1
-                #sleep(1)
             pass
     except:
         print("MQTT server: connection refused")
