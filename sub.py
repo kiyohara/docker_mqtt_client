@@ -7,6 +7,7 @@ import paho.mqtt.client as paho
 import etcd
 import json
 
+SUBSCRIBE_CNT = 1000000
 g_sub_counter = 0
 g_start_time = 0
 g_end_time = 0
@@ -27,7 +28,7 @@ def on_message(client, obj, mesg):
         print("start time : {0} ms".format(g_start_time))
         sys.stdout.flush()
 
-    if g_sub_counter == 100000:
+    if g_sub_counter == SUBSCRIBE_CNT:
         g_end_time = int(time.time()*1000)
         print("  end time : {0} ms".format(g_end_time))
         print("delta time : {0} ms".format(g_end_time - g_start_time))

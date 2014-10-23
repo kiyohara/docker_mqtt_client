@@ -8,6 +8,7 @@ import paho.mqtt.client as paho
 import etcd
 import json
 
+PUBLISH_CNT = 1000000
 PUB_PER_SEC = 6100
 
 g_pub_counter = 0
@@ -34,7 +35,7 @@ def on_publish(client, obj, mid):
         print("start time : {0} ms".format(g_start_time))
         sys.stdout.flush()
 
-    if g_pub_counter == 100000:
+    if g_pub_counter == PUBLISH_CNT:
         g_end_time = int(time.time()*1000)
         print("  end time : {0} ms".format(g_end_time))
         print("delta time : {0} ms".format(g_end_time - g_start_time))
@@ -82,7 +83,7 @@ if __name__ == '__main__':
         while client.loop() == 0:
             client.publish("my/topic/string", "hello%d"%i, qos=0)
 
-            if i == 100000:
+            if i == PUBLISH_CNT:
                 break
             else:
                 next_pub_time = start_time + (i * pub_interval)
